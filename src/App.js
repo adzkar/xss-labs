@@ -1,8 +1,18 @@
 import React, { useState } from "react";
-import { Typography, Row, Col, Form, Input, Button, Select } from "antd";
+import {
+  Typography,
+  Row,
+  Col,
+  Form,
+  Input,
+  Button,
+  Select,
+  Skeleton,
+} from "antd";
 import "./App.css";
 import "antd/dist/antd.css";
 import SCANNING from "./config/scanning";
+import { onSubmit } from "./form.handler";
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -13,19 +23,8 @@ const requiredMessage = ({ message }) => {
 
 const App = () => {
   const [hasResult, setHasResult] = useState(false);
-
-  const onSubmit = (values) => {
-    if (values.type === SCANNING.TYPE.DOM) {
-      console.log("dom");
-    }
-    if (values.type === SCANNING.TYPE.REFLECTED) {
-      console.log("reflected");
-    }
-    if (values.type === SCANNING.TYPE.STORED) {
-      console.log("stored");
-    }
-    setHasResult(true);
-  };
+  const [isLoading, setIsLoading] = useState(false);
+  const [result, setResult] = useState();
 
   return (
     <div className="App">
@@ -37,7 +36,12 @@ const App = () => {
           </Col>
         </Row>
 
-        <Form layout="vertical" onFinish={onSubmit}>
+        <Form
+          layout="vertical"
+          onFinish={(values) => {
+            onSubmit({ values, setHasResult, setIsLoading, setResult });
+          }}
+        >
           <Form.Item
             label="Target URL"
             name="target_url"
@@ -91,17 +95,34 @@ const App = () => {
           >
             <Select placeholder="Choose Scanning type">
               {Object.keys(SCANNING.TYPE).map((item) => {
-                return <Option value={item}>{item}</Option>;
+                return (
+                  <Option value={SCANNING.TYPE[item]} key={item}>
+                    {item}
+                  </Option>
+                );
               })}
             </Select>
           </Form.Item>
 
-          <Button htmlType="submit" block type="primary">
+          <Button htmlType="submit" block type="primary" loading={isLoading}>
             Scan Now!
           </Button>
         </Form>
 
-        {hasResult && (
+        {isLoading && (
+          <Row
+            gutter={[24, 4]}
+            style={{
+              marginTop: "20px",
+            }}
+          >
+            <Col span={24}>
+              <Skeleton />
+            </Col>
+          </Row>
+        )}
+
+        {hasResult && !isLoading && (
           <Row
             gutter={[24, 4]}
             style={{
@@ -112,7 +133,7 @@ const App = () => {
               <Title level={3}>Results</Title>
             </Col>
             <Col span={24} className="container_result">
-              <Text>hola</Text>
+              <Text>{result}</Text>
             </Col>
           </Row>
         )}

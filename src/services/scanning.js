@@ -13,6 +13,7 @@ function postStored(body) {
   return baseService.post(REST.STORED, body);
 }
 
+// eslint-disable-next-line import/no-anonymous-default-export
 export default {
   postReflected,
   postDom,
