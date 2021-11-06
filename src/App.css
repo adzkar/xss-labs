@@ -1,6 +1,7 @@
 .App {
   background-color: #f5f6fa;
-  height: 100vh;
+  padding-bottom: 40px;
+  min-height: 100vh;
 }
 
 .container_title_wrapper {

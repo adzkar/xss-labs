@@ -1,9 +1,11 @@
 import React, { useState } from "react";
-import { Typography, Row, Col, Form, Input, Button } from "antd";
+import { Typography, Row, Col, Form, Input, Button, Select } from "antd";
 import "./App.css";
 import "antd/dist/antd.css";
+import SCANNING from "./config/scanning";
 
 const { Title, Text } = Typography;
+const { Option } = Select;
 
 const requiredMessage = ({ message }) => {
   return `${message} is Required`;
@@ -12,7 +14,16 @@ const requiredMessage = ({ message }) => {
 const App = () => {
   const [hasResult, setHasResult] = useState(false);
 
-  const onSubmit = () => {
+  const onSubmit = (values) => {
+    if (values.type === SCANNING.TYPE.DOM) {
+      console.log("dom");
+    }
+    if (values.type === SCANNING.TYPE.REFLECTED) {
+      console.log("reflected");
+    }
+    if (values.type === SCANNING.TYPE.STORED) {
+      console.log("stored");
+    }
     setHasResult(true);
   };
 
@@ -68,26 +79,35 @@ const App = () => {
             <Input.TextArea placeholder="Ex: <img />" />
           </Form.Item>
 
-          <Row gutter={[24, 24]}>
-            <Col span={12}>
-              <Form.Item name="dom">
-                <Button htmlType="submit" block type="ghost">
-                  DOM & Reflected
-                </Button>
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item name="stored">
-                <Button htmlType="submit" block type="primary">
-                  STORED
-                </Button>
-              </Form.Item>
-            </Col>
-          </Row>
+          <Form.Item
+            name="type"
+            label="Type"
+            rules={[
+              {
+                required: true,
+                message: requiredMessage({ message: "Scanning Type" }),
+              },
+            ]}
+          >
+            <Select placeholder="Choose Scanning type">
+              {Object.keys(SCANNING.TYPE).map((item) => {
+                return <Option value={item}>{item}</Option>;
+              })}
+            </Select>
+          </Form.Item>
+
+          <Button htmlType="submit" block type="primary">
+            Scan Now!
+          </Button>
         </Form>
 
         {hasResult && (
-          <Row gutter={[24, 4]}>
+          <Row
+            gutter={[24, 4]}
+            style={{
+              marginTop: "20px",
+            }}
+          >
             <Col span={24}>
               <Title level={3}>Results</Title>
             </Col>
