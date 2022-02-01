@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Typography,
   Row,
@@ -8,6 +8,9 @@ import {
   Button,
   Select,
   Skeleton,
+  Space,
+  Tag,
+  Card,
 } from "antd";
 import "./App.css";
 import "antd/dist/antd.css";
@@ -21,10 +24,73 @@ const requiredMessage = ({ message }) => {
   return `${message} is Required`;
 };
 
+const ResultItem = (props) => {
+  const { payload, data } = props;
+
+  try {
+    const res = JSON.parse(data);
+    return (
+      <>
+        Payload: <strong>{payload}</strong>
+        <br />
+        <p>
+          Message:{" "}
+          {res?.[0]?.result ? (
+            <Tag color="green">Found</Tag>
+          ) : (
+            <Tag color="red">Not Found</Tag>
+          )}
+        </p>
+        <Space />
+      </>
+    );
+  } catch {
+    return (
+      <>
+        Payload: <strong>{payload}</strong>
+        <br />
+        <p>
+          Message:
+          <Tag color="red">Not Found</Tag>
+        </p>
+        <Space />
+      </>
+    );
+  }
+};
+
 const App = () => {
   const [hasResult, setHasResult] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [result, setResult] = useState();
+  const [result, setResult] = useState([]);
+  const [total, setTotal] = useState({
+    found: 0,
+    notFound: 0,
+  });
+
+  useEffect(() => {
+    if (hasResult) {
+      let foundTmp = 0;
+      let notFoundTmp = 0;
+      result.forEach(({ data }) => {
+        try {
+          const x = JSON.parse(data);
+          if (x?.[0]?.result) {
+            foundTmp += 1;
+          }
+          if (!x?.[0]?.result) {
+            notFoundTmp += 1;
+          }
+        } catch {
+          notFoundTmp += 1;
+        }
+      });
+      setTotal({
+        found: foundTmp,
+        notFound: notFoundTmp,
+      });
+    }
+  }, [result, hasResult]);
 
   return (
     <div className="App">
@@ -60,7 +126,7 @@ const App = () => {
           </Form.Item>
           <Form.Item
             label="Cookie"
-            name="cookie"
+            name="cookies"
             rules={[
               {
                 required: true,
@@ -80,7 +146,7 @@ const App = () => {
               },
             ]}
           >
-            <Input.TextArea placeholder="Ex: <img />" />
+            <Input.TextArea placeholder="Ex: <img />" rows={4} />
           </Form.Item>
 
           <Form.Item
@@ -124,7 +190,7 @@ const App = () => {
 
         {hasResult && !isLoading && (
           <Row
-            gutter={[24, 4]}
+            gutter={[24, 8]}
             style={{
               marginTop: "20px",
             }}
@@ -132,8 +198,40 @@ const App = () => {
             <Col span={24}>
               <Title level={3}>Results</Title>
             </Col>
-            <Col span={24} className="container_result">
-              <Text>{result}</Text>
+            <Col span={24}>
+              <Row gutter={[24]}>
+                <Col span={12}>
+                  <Card title="Found">
+                    <Title
+                      style={{
+                        textAlign: "right",
+                      }}
+                    >
+                      {total?.found}
+                    </Title>
+                  </Card>
+                </Col>
+                <Col span={12}>
+                  <Card title="Not Found">
+                    <Title
+                      style={{
+                        textAlign: "right",
+                      }}
+                    >
+                      {total?.notFound}
+                    </Title>
+                  </Card>
+                </Col>
+              </Row>
+            </Col>
+            <Col span={24}>
+              <Card>
+                <Text>
+                  {result.map(({ payload, data }) => {
+                    return <ResultItem data={data} payload={payload} />;
+                  })}
+                </Text>
+              </Card>
             </Col>
           </Row>
         )}
