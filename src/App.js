@@ -15,7 +15,11 @@ import {
 import "./App.css";
 import "antd/dist/antd.css";
 import SCANNING from "./config/scanning";
-import { onSubmit } from "./form.handler";
+import {
+  onSubmit,
+  getArrayFromString,
+  getTimeFromString,
+} from "./form.handler";
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -28,18 +32,23 @@ const ResultItem = (props) => {
   const { payload, data } = props;
 
   try {
-    const res = JSON.parse(data);
+    const stringResult = getArrayFromString(data);
+    const resultTime = getTimeFromString(data);
+    const parsedResponse = JSON.parse(stringResult);
+    const result = parsedResponse?.[0]?.result;
+
     return (
       <>
         Payload: <strong>{payload}</strong>
         <br />
         <p>
           Message:{" "}
-          {res?.[0]?.result ? (
+          {result ? (
             <Tag color="green">Found</Tag>
           ) : (
             <Tag color="red">Not Found</Tag>
           )}
+          <Tag>{resultTime}</Tag>
         </p>
         <Space />
       </>
@@ -52,6 +61,7 @@ const ResultItem = (props) => {
         <p>
           Message:
           <Tag color="red">Not Found</Tag>
+          <Tag>{data}</Tag>
         </p>
         <Space />
       </>
@@ -74,11 +84,13 @@ const App = () => {
       let notFoundTmp = 0;
       result.forEach(({ data }) => {
         try {
-          const x = JSON.parse(data);
-          if (x?.[0]?.result) {
+          const stringResult = getArrayFromString(data);
+          const parsedResponse = JSON.parse(stringResult);
+          const result = parsedResponse?.[0]?.result;
+          if (result) {
             foundTmp += 1;
           }
-          if (!x?.[0]?.result) {
+          if (!result) {
             notFoundTmp += 1;
           }
         } catch {

