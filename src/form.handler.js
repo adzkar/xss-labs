@@ -29,7 +29,7 @@ export const onSubmit = ({ values, setHasResult, setIsLoading, setResult }) => {
       });
   }
   if (values.type === SCANNING.TYPE.STORED) {
-    ScanningService.postReflected(body)
+    ScanningService.postStored(body)
       .then((res) => {
         setResult(res?.data);
       })

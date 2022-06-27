@@ -48,7 +48,7 @@ const ResultItem = (props) => {
           ) : (
             <Tag color="red">Not Found</Tag>
           )}
-          <Tag>{resultTime}</Tag>
+          {resultTime?.length > 0 && <Tag>{resultTime}</Tag>}
         </p>
         <Space />
       </>
